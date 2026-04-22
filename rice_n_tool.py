@@ -15,7 +15,6 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 .stApp { background-color: #f0f4f8; }
 #MainMenu, footer, header { visibility: hidden; }
 
-/* Force number inputs to have visible labels and light background */
 .stNumberInput > label {
     font-size: 0.72rem !important;
     font-weight: 500 !important;
@@ -61,12 +60,7 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     margin: 0 0 4px 0;
     letter-spacing: -0.02em;
 }
-.rc-header p {
-    font-size: 0.8rem;
-    color: #6a8aaa;
-    margin: 0;
-    font-weight: 300;
-}
+.rc-header p { font-size: 0.8rem; color: #6a8aaa; margin: 0; font-weight: 300; }
 
 .rc-inputs-box {
     background: #ffffff;
@@ -122,33 +116,12 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     color: #0e1e30;
     line-height: 1;
 }
-.rc-card-unit {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.7rem;
-    color: #7a9aaa;
-    margin-left: 5px;
-}
+.rc-card-unit { font-family: 'DM Mono', monospace; font-size: 0.7rem; color: #7a9aaa; margin-left: 5px; }
 .rc-card-sub { font-size: 0.7rem; color: #7a9aaa; margin-top: 5px; }
 
-.rc-bar-track {
-    background: #e0eaf2;
-    border-radius: 1px;
-    height: 4px;
-    margin: 8px 0 3px 0;
-    overflow: hidden;
-}
-.rc-bar-fill {
-    height: 100%;
-    border-radius: 1px;
-    background: linear-gradient(90deg, #7ab4d8, #1a4a7a);
-}
-.rc-bar-ticks {
-    display: flex;
-    justify-content: space-between;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.58rem;
-    color: #a0b8cc;
-}
+.rc-bar-track { background: #e0eaf2; border-radius: 1px; height: 4px; margin: 8px 0 3px 0; overflow: hidden; }
+.rc-bar-fill { height: 100%; border-radius: 1px; background: linear-gradient(90deg, #7ab4d8, #1a4a7a); }
+.rc-bar-ticks { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 0.58rem; color: #a0b8cc; }
 
 .rc-rec {
     background: #0e1e30;
@@ -156,82 +129,42 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     padding: 1.8rem 1.5rem;
     text-align: center;
 }
-.rc-rec-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: #3a6a9a;
-    margin-bottom: 10px;
-}
-.rc-rec-value {
-    font-family: 'DM Mono', monospace;
-    font-size: 3.4rem;
-    font-weight: 500;
-    color: #7ac4f0;
-    line-height: 1;
-}
+.rc-rec-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.16em; text-transform: uppercase; color: #3a6a9a; margin-bottom: 10px; }
+.rc-rec-value { font-family: 'DM Mono', monospace; font-size: 3.4rem; font-weight: 500; color: #7ac4f0; line-height: 1; }
 .rc-rec-unit { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: #3a6a9a; margin-top: 6px; }
-.rc-rec-note {
-    font-size: 0.68rem; color: #3a6a9a; margin-top: 14px;
-    line-height: 1.6; text-align: left;
-    border-top: 1px solid #1e3e58; padding-top: 12px;
-}
+.rc-rec-note { font-size: 0.68rem; color: #3a6a9a; margin-top: 14px; line-height: 1.6; text-align: left; border-top: 1px solid #1e3e58; padding-top: 12px; }
 
-.rc-ri-card {
-    background: #ffffff;
-    border: 1px solid #ccd8e8;
-    border-radius: 3px;
-    padding: 1rem 1.2rem;
-    margin-bottom: 10px;
-}
-.rc-ri-bar-track {
-    background: #e0eaf2; border-radius: 1px;
-    height: 6px; margin: 10px 0 4px 0; overflow: hidden;
-}
+.rc-ri-card { background: #ffffff; border: 1px solid #ccd8e8; border-radius: 3px; padding: 1rem 1.2rem; margin-bottom: 10px; }
+.rc-ri-bar-track { background: #e0eaf2; border-radius: 1px; height: 6px; margin: 10px 0 4px 0; overflow: hidden; }
 .rc-ri-bar-fill { height: 100%; border-radius: 1px; }
 
-.rc-interp {
-    border-radius: 2px; padding: 9px 13px;
-    font-size: 0.78rem; margin-top: 10px;
-    border-left: 2px solid; line-height: 1.5;
-}
+.rc-interp { border-radius: 2px; padding: 9px 13px; font-size: 0.78rem; margin-top: 10px; border-left: 2px solid; line-height: 1.5; }
 .rc-interp-low  { background:#f0f6fc; border-color:#2a6a9a; color:#0e2038; }
 .rc-interp-mod  { background:#fdf8ee; border-color:#c49a28; color:#5a4200; }
 .rc-interp-high { background:#fdf2f2; border-color:#b84848; color:#5a1818; }
 
-.rc-formula {
-    background: #f0f5fa; border: 1px solid #ccd8e8;
-    border-radius: 3px; padding: 0.9rem 1.1rem;
-    font-family: 'DM Mono', monospace; font-size: 0.72rem;
-    color: #3a5a7a; line-height: 2; margin-top: 12px;
-}
+.rc-formula { background: #f0f5fa; border: 1px solid #ccd8e8; border-radius: 3px; padding: 0.9rem 1.1rem; font-family: 'DM Mono', monospace; font-size: 0.72rem; color: #3a5a7a; line-height: 2; margin-top: 12px; }
 .rc-formula strong { color: #0e1e30; }
 
-.rc-footer {
-    margin-top: 2.5rem; padding-top: 1rem;
-    border-top: 1px solid #ccd8e8;
-    display: flex; justify-content: space-between;
-    font-size: 0.66rem; color: #8aaac0;
-    font-family: 'DM Mono', monospace;
-}
+.rc-footer { margin-top: 2.5rem; padding-top: 1rem; border-top: 1px solid #ccd8e8; display: flex; justify-content: space-between; font-size: 0.66rem; color: #8aaac0; font-family: 'DM Mono', monospace; }
 </style>
 """, unsafe_allow_html=True)
 
 
 # ── Core model ────────────────────────────────────────────────────────────────
 def rice_n_recommendation(ndvi_fp, ndvi_nrs, days, max_yield, pct_n, nue):
-    # Step 1: INSEY — normalize NDVI by days from planting to sensing
+    # Step 1: INSEY — NDVI divided by days from planting to sensing
     insey = ndvi_fp / days
 
-    # Step 2: Yield potential without N using INSEY power function (coeff=5948.45)
+    # Step 2: Yield potential without N using INSEY power function
+    # Coefficient 5948.45 calibrated from LSU AgCenter/MSU field data
     yp0 = min(5948.45 * (insey ** 0.72), max_yield)
 
-    # Step 3: Grain N uptake without N — yield (bu/ac) × 45 lbs/bu × %N / 100
+    # Step 3: Grain N uptake without N — yield × 45 lbs/bu × grain %N
     gnup_yp0 = yp0 * 45 * (pct_n / 100)
 
-    # Step 4: Response Index — rice-specific RI formula from LSU AgCenter/MSU
-    ri = ((ndvi_nrs / ndvi_fp) * 1.0077 + 0.19727) * 0.94 if ndvi_fp > 0 else 0
+    # Step 4: Response Index — rice-specific formula (LSU AgCenter / MSU 2011)
+    ri = ((ndvi_nrs / ndvi_fp) * 1.0077 + 0.19727) * 0.94
 
     # Step 5: Yield potential with N applied, capped at max yield
     ypn = min(yp0 * ri, max_yield)
@@ -239,7 +172,7 @@ def rice_n_recommendation(ndvi_fp, ndvi_nrs, days, max_yield, pct_n, nue):
     # Step 6: Grain N uptake with N applied
     gnup_ypn = ypn * 45 * (pct_n / 100)
 
-    # Step 7: Fertilizer N requirement, clamped to agronomic bounds for rice
+    # Step 7: Fertilizer N requirement, bounded 0–150 lbs N/ac
     fnr = float(np.clip((gnup_ypn - gnup_yp0) / nue, 0, 150))
 
     return yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr
@@ -258,46 +191,48 @@ st.markdown("""
 # ── Inputs ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="rc-inputs-box"><div class="rc-inputs-title">Input Parameters</div>', unsafe_allow_html=True)
 
-col_a, col_b, col_c, col_d, col_e, col_f = st.columns(6)
+c1, c2, c3, c4, c5, c6 = st.columns(6)
 
-with col_a:
+with c1:
     ndvi_nrs = st.number_input(
         "NDVI — N Rich Strip",
         min_value=0.01, max_value=1.0,
         value=0.80, step=0.01, format="%.2f",
         help="NDVI from the well-fertilized reference strip"
     )
-with col_b:
+with c2:
     ndvi_fp = st.number_input(
         "NDVI — Farmer's Practice",
         min_value=0.01, max_value=1.0,
         value=0.77, step=0.01, format="%.2f",
         help="NDVI from the target field (no midseason N applied)"
     )
-with col_c:
+with c3:
     days = st.number_input(
         "Days — Planting to Sensing",
-        value=71, min_value=1, max_value=180,
-        help="Number of days from planting date to NDVI sensing date"
+        min_value=1, max_value=180,
+        value=71,
+        help="Days between planting date and NDVI sensing date"
     )
-with col_d:
+with c4:
     max_yield = st.number_input(
         "Max Yield (bu/ac)",
-        value=320, min_value=50, max_value=600,
+        min_value=50, max_value=600,
+        value=320,
         help="Set to ~2× the 5-year average yield"
     )
-with col_e:
+with c5:
     pct_n = st.number_input(
         "Grain N Content (%)",
-        value=1.20, min_value=0.50, max_value=3.0,
-        step=0.01, format="%.2f",
-        help="Default 1.2% — rice grain N per LSU AgCenter"
+        min_value=0.50, max_value=3.0,
+        value=1.20, step=0.01, format="%.2f",
+        help="Default 1.2% — LSU AgCenter rice grain N"
     )
-with col_f:
+with c6:
     nue = st.number_input(
         "N Use Efficiency",
-        value=0.75, min_value=0.10, max_value=1.0,
-        step=0.05, format="%.2f",
+        min_value=0.10, max_value=1.0,
+        value=0.75, step=0.05, format="%.2f",
         help="Default 75% for midseason rice application"
     )
 
@@ -382,7 +317,6 @@ with left:
             <div class="rc-card-value">{gnup_ypn:.1f}<span class="rc-card-unit">lb N/ac</span></div>
         </div>""", unsafe_allow_html=True)
 
-    # RI card
     ri_pct = int(min(max((ri / 2.0) * 100, 0), 100))
     ri_color = "#b84848" if ri > 1.2 else "#c49a28" if ri > 1.0 else "#2a6a9a"
     st.markdown(f"""
@@ -404,7 +338,7 @@ with left:
         interp_msg = f"RI of {ri:.3f} indicates a strong crop response to nitrogen. Midseason application is recommended."
     elif ri > 1.0:
         interp_class = "rc-interp-mod"
-        interp_msg = f"RI of {ri:.3f} suggests a moderate response. Evaluate application against economic threshold."
+        interp_msg = f"RI of {ri:.3f} suggests a moderate response. Evaluate application against the economic threshold."
     else:
         interp_class = "rc-interp-low"
         interp_msg = f"RI of {ri:.3f} indicates low expected response. Midseason nitrogen may not be economically justified."
@@ -424,11 +358,11 @@ with right:
     </div>
     <div class="rc-formula">
         <strong>INSEY</strong> = NDVI_FP / days from planting<br>
-        <strong>YP0</strong> = 5948.45 × INSEY^0.72<br>
-        <strong>RI</strong> &nbsp;= ((NRS/FP) × 1.0077 + 0.19727) × 0.94<br>
-        <strong>YPN</strong> = YP0 × RI<br>
+        <strong>YP0</strong> &nbsp;= 5948.45 × INSEY^0.72<br>
+        <strong>RI</strong> &nbsp;&nbsp;= ((NRS/FP) × 1.0077 + 0.19727) × 0.94<br>
+        <strong>YPN</strong> &nbsp;= YP0 × RI<br>
         <strong>GNUP</strong> = Yield × 45 lbs/bu × %N<br>
-        <strong>FNR</strong> &nbsp;= (GNUPₙ − GNUP₀) / NUE
+        <strong>FNR</strong> &nbsp;&nbsp;= (GNUPₙ − GNUP₀) / NUE
     </div>
     """, unsafe_allow_html=True)
 
