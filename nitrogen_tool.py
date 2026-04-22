@@ -1,55 +1,24 @@
 import streamlit as st
 import numpy as np
 
-# ── Page Config ───────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Sugarcane N Rate Calculator",
     page_icon="🎋",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# ── CSS ───────────────────────────────────────────────────────────────────────
-# Only style non-interactive elements — sidebar inputs are left as Streamlit defaults
-# so they always render and function correctly regardless of browser/version
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'DM Sans', sans-serif;
-}
-
-/* ── Main area background ── */
-.stApp {
-    background-color: #f7f8f6;
-}
-
-/* ── Hide Streamlit chrome ── */
+html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
+.stApp { background-color: #f7f8f6; }
 #MainMenu, footer, header { visibility: hidden; }
 
-/* ── Page header ── */
 .sc-header {
-    padding: 2.2rem 0 1.6rem 0;
+    padding: 2rem 0 1.4rem 0;
     border-bottom: 1px solid #d0d8d0;
     margin-bottom: 2rem;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-between;
-}
-.sc-header-left h1 {
-    font-family: 'DM Mono', monospace;
-    font-size: 1.35rem;
-    font-weight: 500;
-    color: #0e2420;
-    margin: 0 0 4px 0;
-    letter-spacing: -0.02em;
-}
-.sc-header-left p {
-    font-size: 0.8rem;
-    color: #7a9490;
-    margin: 0;
-    font-weight: 300;
 }
 .sc-badge {
     font-family: 'DM Mono', monospace;
@@ -63,15 +32,40 @@ html, body, [class*="css"] {
     margin-bottom: 8px;
     display: inline-block;
 }
-.sc-header-right {
-    text-align: right;
-    font-size: 0.72rem;
-    color: #9aada8;
+.sc-header h1 {
     font-family: 'DM Mono', monospace;
-    line-height: 1.8;
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: #0e2420;
+    margin: 0 0 4px 0;
+    letter-spacing: -0.02em;
+}
+.sc-header p {
+    font-size: 0.8rem;
+    color: #7a9490;
+    margin: 0;
+    font-weight: 300;
 }
 
-/* ── Section labels ── */
+.sc-inputs-box {
+    background: #ffffff;
+    border: 1px solid #dde4dc;
+    border-radius: 4px;
+    padding: 1.4rem 1.5rem 1.2rem 1.5rem;
+    margin-bottom: 2rem;
+}
+.sc-inputs-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #9aada8;
+    font-weight: 500;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eef2ee;
+    margin-bottom: 1rem;
+}
+
 .sc-section {
     font-family: 'DM Mono', monospace;
     font-size: 0.62rem;
@@ -84,14 +78,12 @@ html, body, [class*="css"] {
     margin-bottom: 14px;
 }
 
-/* ── Data cards ── */
 .sc-card {
     background: #ffffff;
     border: 1px solid #dde4dc;
     border-radius: 3px;
     padding: 1rem 1.2rem 0.9rem 1.2rem;
     margin-bottom: 10px;
-    position: relative;
 }
 .sc-card-label {
     font-size: 0.64rem;
@@ -114,13 +106,8 @@ html, body, [class*="css"] {
     color: #9aada8;
     margin-left: 5px;
 }
-.sc-card-sub {
-    font-size: 0.7rem;
-    color: #9aada8;
-    margin-top: 5px;
-}
+.sc-card-sub { font-size: 0.7rem; color: #9aada8; margin-top: 5px; }
 
-/* ── NDVI bar ── */
 .sc-bar-track {
     background: #eef2ee;
     border-radius: 1px;
@@ -141,7 +128,6 @@ html, body, [class*="css"] {
     color: #b0bdb8;
 }
 
-/* ── N recommendation panel ── */
 .sc-rec {
     background: #0e2420;
     border-radius: 3px;
@@ -163,23 +149,13 @@ html, body, [class*="css"] {
     color: #7addd0;
     line-height: 1;
 }
-.sc-rec-unit {
-    font-family: 'DM Mono', monospace;
-    font-size: 0.8rem;
-    color: #3a7a6e;
-    margin-top: 6px;
-}
+.sc-rec-unit { font-family: 'DM Mono', monospace; font-size: 0.8rem; color: #3a7a6e; margin-top: 6px; }
 .sc-rec-note {
-    font-size: 0.68rem;
-    color: #3a7a6e;
-    margin-top: 14px;
-    line-height: 1.6;
-    text-align: left;
-    border-top: 1px solid #1e3e38;
-    padding-top: 12px;
+    font-size: 0.68rem; color: #3a7a6e; margin-top: 14px;
+    line-height: 1.6; text-align: left;
+    border-top: 1px solid #1e3e38; padding-top: 12px;
 }
 
-/* ── RI indicator ── */
 .sc-ri-card {
     background: #ffffff;
     border: 1px solid #dde4dc;
@@ -188,157 +164,102 @@ html, body, [class*="css"] {
     margin-bottom: 10px;
 }
 .sc-ri-bar-track {
-    background: #eef2ee;
-    border-radius: 1px;
-    height: 6px;
-    margin: 10px 0 4px 0;
-    overflow: hidden;
-    position: relative;
+    background: #eef2ee; border-radius: 1px;
+    height: 6px; margin: 10px 0 4px 0; overflow: hidden;
 }
-.sc-ri-bar-fill {
-    height: 100%;
-    border-radius: 1px;
-    transition: width 0.4s;
-}
+.sc-ri-bar-fill { height: 100%; border-radius: 1px; }
 
-/* ── Interpretation tag ── */
 .sc-interp {
-    border-radius: 2px;
-    padding: 9px 13px;
-    font-size: 0.78rem;
-    margin-top: 10px;
-    border-left: 2px solid;
-    line-height: 1.5;
+    border-radius: 2px; padding: 9px 13px;
+    font-size: 0.78rem; margin-top: 10px;
+    border-left: 2px solid; line-height: 1.5;
 }
 .sc-interp-low  { background:#f0f9f6; border-color:#2a8a78; color:#0e3830; }
 .sc-interp-mod  { background:#fdf8ee; border-color:#c49a28; color:#5a4200; }
 .sc-interp-high { background:#fdf2f2; border-color:#b84848; color:#5a1818; }
 
-/* ── Formula box ── */
 .sc-formula {
-    background: #f2f6f4;
-    border: 1px solid #dde4dc;
-    border-radius: 3px;
-    padding: 0.9rem 1.1rem;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.72rem;
-    color: #4a6460;
-    line-height: 2;
-    margin-top: 12px;
+    background: #f2f6f4; border: 1px solid #dde4dc;
+    border-radius: 3px; padding: 0.9rem 1.1rem;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem;
+    color: #4a6460; line-height: 2; margin-top: 12px;
 }
-.sc-formula strong {
-    color: #0e2420;
-}
+.sc-formula strong { color: #0e2420; }
 
-/* ── Placeholder ── */
-.sc-placeholder {
-    margin-top: 1.5rem;
-    padding: 2rem;
-    background: #ffffff;
-    border: 1px dashed #c8d4cc;
-    border-radius: 3px;
-    text-align: center;
-    color: #9aada8;
-    font-size: 0.82rem;
-}
-
-/* ── Footer ── */
 .sc-footer {
-    margin-top: 2.5rem;
-    padding-top: 1rem;
+    margin-top: 2.5rem; padding-top: 1rem;
     border-top: 1px solid #dde4dc;
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.66rem;
-    color: #aabab6;
+    display: flex; justify-content: space-between;
+    font-size: 0.66rem; color: #aabab6;
     font-family: 'DM Mono', monospace;
 }
 </style>
 """, unsafe_allow_html=True)
 
 
-# ── Sidebar — plain Streamlit widgets, no CSS interference ───────────────────
-with st.sidebar:
-    st.markdown("### ⚙️ Parameters")
-    st.markdown("**NDVI Inputs**")
+# ── Core model ────────────────────────────────────────────────────────────────
+def sugarcane_n_recommendation(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue):
+    yp0 = min(12.07 * np.exp(1.47 * ndvi_fp), max_yield)
+    gnup_yp0 = yp0 * (pct_n / 100) * 2000
+    ri = 1.94 * (ndvi_nrs / ndvi_fp) - 0.91 if ndvi_fp > 0 else 0
+    ypn = min(yp0 * ri, max_yield)
+    gnup_ypn = ypn * (pct_n / 100) * 2000
+    fnr = float(np.clip((gnup_ypn - gnup_yp0) / nue, 40, 180))
+    return yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr
+
+
+# ── Header ────────────────────────────────────────────────────────────────────
+st.markdown("""
+<div class="sc-header">
+    <div class="sc-badge">LSU AgCenter · Sugarcane Research</div>
+    <h1>Sugarcane N Rate Calculator</h1>
+    <p>Sensor-based · NDVI response index algorithm · Tubana, Johnson & Viator</p>
+</div>
+""", unsafe_allow_html=True)
+
+
+# ── Inputs — all on main page, no sidebar ─────────────────────────────────────
+st.markdown('<div class="sc-inputs-box"><div class="sc-inputs-title">Input Parameters</div>', unsafe_allow_html=True)
+
+col_a, col_b, col_c, col_d, col_e = st.columns(5)
+
+with col_a:
     ndvi_nrs = st.number_input(
-        "NDVI — N Rich Strip (NRS)",
+        "NDVI — N Rich Strip",
         min_value=0.01, max_value=1.0,
         value=0.87, step=0.01, format="%.2f"
     )
+with col_b:
     ndvi_fp = st.number_input(
-        "NDVI — Farmer's Practice (FP)",
+        "NDVI — Farmer's Practice",
         min_value=0.01, max_value=1.0,
         value=0.75, step=0.01, format="%.2f"
     )
-    st.markdown("---")
-    st.markdown("**Crop & Field Settings**")
+with col_c:
     max_yield = st.number_input(
-        "Maximum Yield (ton/ac)",
+        "Max Yield (ton/ac)",
         value=80, min_value=20, max_value=200
     )
+with col_d:
     pct_n = st.number_input(
         "Stalk N Content (%)",
         value=0.30, min_value=0.10, max_value=1.0,
-        step=0.01, format="%.2f",
-        help="Default 0.30% — LSU AgCenter sugarcane stalk analysis"
+        step=0.01, format="%.2f"
     )
+with col_e:
     nue = st.number_input(
-        "N Use Efficiency (NUE)",
+        "N Use Efficiency",
         value=0.70, min_value=0.10, max_value=1.0,
-        step=0.05, format="%.2f",
-        help="Typical range: 50–70% for sugarcane in Louisiana"
-    )
-    st.markdown("---")
-    st.caption(
-        "Set max yield to ~2× the 5-year field average. "
-        "Algorithm: Tubana, Johnson & Viator — LSU AgCenter."
+        step=0.05, format="%.2f"
     )
 
-
-# ── Core model ────────────────────────────────────────────────────────────────
-def sugarcane_n_recommendation(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue):
-    # Step 1: Yield potential without N (exponential NDVI model)
-    yp0 = min(12.07 * np.exp(1.47 * ndvi_fp), max_yield)
-
-    # Step 2: Stalk N uptake without N — ton/ac × %N × 2000 → lb N/ac
-    gnup_yp0 = yp0 * (pct_n / 100) * 2000
-
-    # Step 3: Response Index
-    ri = 1.94 * (ndvi_nrs / ndvi_fp) - 0.91 if ndvi_fp > 0 else 0
-
-    # Step 4: Yield potential with N, capped at max yield
-    ypn = min(yp0 * ri, max_yield)
-
-    # Step 5: Stalk N uptake with N
-    gnup_ypn = ypn * (pct_n / 100) * 2000
-
-    # Step 6: Fertilizer N requirement, clamped to 40–180 lb N/ac
-    fnr = float(np.clip((gnup_ypn - gnup_yp0) / nue, 40, 180))
-
-    return yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr
+st.markdown('</div>', unsafe_allow_html=True)
 
 
 # ── Run model ─────────────────────────────────────────────────────────────────
 yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr = sugarcane_n_recommendation(
     ndvi_fp, ndvi_nrs, max_yield, pct_n, nue
 )
-
-
-# ── Header ────────────────────────────────────────────────────────────────────
-st.markdown(f"""
-<div class="sc-header">
-    <div class="sc-header-left">
-        <div class="sc-badge">LSU AgCenter · Sugarcane Research</div>
-        <h1>Sugarcane N Rate Calculator</h1>
-        <p>Sensor-based · NDVI response index algorithm · Mid-season variable-rate application</p>
-    </div>
-    <div class="sc-header-right">
-        NRS &nbsp;{ndvi_nrs:.2f} &nbsp;/&nbsp; FP &nbsp;{ndvi_fp:.2f}<br>
-        Max yield &nbsp;{max_yield} ton/ac &nbsp;· &nbsp;NUE &nbsp;{nue:.0%}
-    </div>
-</div>
-""", unsafe_allow_html=True)
 
 
 # ── NDVI Overview ─────────────────────────────────────────────────────────────
@@ -394,21 +315,18 @@ with left:
             <div class="sc-card-label">Yield Potential — No N (YP0)</div>
             <div class="sc-card-value">{yp0:.2f}<span class="sc-card-unit">ton/ac</span></div>
         </div>""", unsafe_allow_html=True)
-
     with r2:
         st.markdown(f"""
         <div class="sc-card">
             <div class="sc-card-label">Yield Potential — With N (YPN)</div>
             <div class="sc-card-value">{ypn:.2f}<span class="sc-card-unit">ton/ac</span></div>
         </div>""", unsafe_allow_html=True)
-
     with r3:
         st.markdown(f"""
         <div class="sc-card">
             <div class="sc-card-label">Stalk N Uptake — No N (GNUP₀)</div>
             <div class="sc-card-value">{gnup_yp0:.1f}<span class="sc-card-unit">lb N/ac</span></div>
         </div>""", unsafe_allow_html=True)
-
     with r4:
         st.markdown(f"""
         <div class="sc-card">
@@ -416,10 +334,8 @@ with left:
             <div class="sc-card-value">{gnup_ypn:.1f}<span class="sc-card-unit">lb N/ac</span></div>
         </div>""", unsafe_allow_html=True)
 
-    # RI card with visual bar
     ri_pct = int(min(max((ri / 2.0) * 100, 0), 100))
     ri_color = "#b84848" if ri > 1.2 else "#c49a28" if ri > 1.0 else "#2a8a78"
-    ri_bg    = "#fdf2f2" if ri > 1.2 else "#fdf8ee" if ri > 1.0 else "#f0f9f6"
     st.markdown(f"""
     <div class="sc-ri-card">
         <div class="sc-card-label">Response Index (RI) &nbsp;·&nbsp;
@@ -434,16 +350,12 @@ with left:
         <div class="sc-bar-ticks"><span>0.0</span><span>1.0</span><span>2.0</span></div>
     </div>""", unsafe_allow_html=True)
 
-    # Interpretation
     if ri > 1.2:
-        interp_class = "sc-interp-high"
-        interp_msg = f"RI of {ri:.3f} indicates a strong crop response to nitrogen. Application is recommended to avoid yield loss."
+        interp_class, interp_msg = "sc-interp-high", f"RI of {ri:.3f} indicates a strong crop response to nitrogen. Application is recommended to avoid yield loss."
     elif ri > 1.0:
-        interp_class = "sc-interp-mod"
-        interp_msg = f"RI of {ri:.3f} suggests a moderate response. Evaluate nitrogen application against the economic threshold."
+        interp_class, interp_msg = "sc-interp-mod", f"RI of {ri:.3f} suggests a moderate response. Evaluate nitrogen application against the economic threshold."
     else:
-        interp_class = "sc-interp-low"
-        interp_msg = f"RI of {ri:.3f} indicates low expected response. Additional nitrogen may not be economically justified."
+        interp_class, interp_msg = "sc-interp-low", f"RI of {ri:.3f} indicates low expected response. Additional nitrogen may not be economically justified."
 
     st.markdown(f'<div class="sc-interp {interp_class}">{interp_msg}</div>', unsafe_allow_html=True)
 
