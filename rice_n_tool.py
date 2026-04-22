@@ -220,24 +220,26 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 
 
 # ── Core model ────────────────────────────────────────────────────────────────
-def rice_n_recommendation(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue):
-    # Step 1: Yield potential without N — power function specific to rice
-    yp0 = min(12088 * (ndvi_fp ** 0.72), max_yield)
+def rice_n_recommendation(ndvi_fp, ndvi_nrs, days, max_yield, pct_n, nue):
+    # Step 1: INSEY — normalize NDVI by days from planting to sensing
+    insey = ndvi_fp / days
 
-    # Step 2: Grain N uptake without N — yield (bu/ac) × lbs/bu × %N / 100
-    # Rice: 45 lbs per bushel, 1.2% grain N
+    # Step 2: Yield potential without N using INSEY power function (coeff=5948.45)
+    yp0 = min(5948.45 * (insey ** 0.72), max_yield)
+
+    # Step 3: Grain N uptake without N — yield (bu/ac) × 45 lbs/bu × %N / 100
     gnup_yp0 = yp0 * 45 * (pct_n / 100)
 
-    # Step 3: Response Index — rice-specific RI formula from LSU AgCenter/MSU
+    # Step 4: Response Index — rice-specific RI formula from LSU AgCenter/MSU
     ri = ((ndvi_nrs / ndvi_fp) * 1.0077 + 0.19727) * 0.94 if ndvi_fp > 0 else 0
 
-    # Step 4: Yield potential with N applied, capped at max yield
+    # Step 5: Yield potential with N applied, capped at max yield
     ypn = min(yp0 * ri, max_yield)
 
-    # Step 5: Grain N uptake with N applied
+    # Step 6: Grain N uptake with N applied
     gnup_ypn = ypn * 45 * (pct_n / 100)
 
-    # Step 6: Fertilizer N requirement, clamped to agronomic bounds for rice
+    # Step 7: Fertilizer N requirement, clamped to agronomic bounds for rice
     fnr = float(np.clip((gnup_ypn - gnup_yp0) / nue, 0, 150))
 
     return yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr
@@ -256,36 +258,42 @@ st.markdown("""
 # ── Inputs ────────────────────────────────────────────────────────────────────
 st.markdown('<div class="rc-inputs-box"><div class="rc-inputs-title">Input Parameters</div>', unsafe_allow_html=True)
 
-col_a, col_b, col_c, col_d, col_e = st.columns(5)
+col_a, col_b, col_c, col_d, col_e, col_f = st.columns(6)
 
 with col_a:
     ndvi_nrs = st.number_input(
         "NDVI — N Rich Strip",
         min_value=0.01, max_value=1.0,
-        value=0.94, step=0.01, format="%.2f",
+        value=0.80, step=0.01, format="%.2f",
         help="NDVI from the well-fertilized reference strip"
     )
 with col_b:
     ndvi_fp = st.number_input(
         "NDVI — Farmer's Practice",
         min_value=0.01, max_value=1.0,
-        value=0.94, step=0.01, format="%.2f",
+        value=0.77, step=0.01, format="%.2f",
         help="NDVI from the target field (no midseason N applied)"
     )
 with col_c:
+    days = st.number_input(
+        "Days — Planting to Sensing",
+        value=71, min_value=1, max_value=180,
+        help="Number of days from planting date to NDVI sensing date"
+    )
+with col_d:
     max_yield = st.number_input(
         "Max Yield (bu/ac)",
         value=320, min_value=50, max_value=600,
         help="Set to ~2× the 5-year average yield"
     )
-with col_d:
+with col_e:
     pct_n = st.number_input(
         "Grain N Content (%)",
         value=1.20, min_value=0.50, max_value=3.0,
         step=0.01, format="%.2f",
         help="Default 1.2% — rice grain N per LSU AgCenter"
     )
-with col_e:
+with col_f:
     nue = st.number_input(
         "N Use Efficiency",
         value=0.75, min_value=0.10, max_value=1.0,
@@ -298,7 +306,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 # ── Run model ─────────────────────────────────────────────────────────────────
 yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr = rice_n_recommendation(
-    ndvi_fp, ndvi_nrs, max_yield, pct_n, nue
+    ndvi_fp, ndvi_nrs, days, max_yield, pct_n, nue
 )
 
 
@@ -415,7 +423,8 @@ with right:
         </div>
     </div>
     <div class="rc-formula">
-        <strong>YP0</strong> = 12088 × NDVI_FP^0.72<br>
+        <strong>INSEY</strong> = NDVI_FP / days from planting<br>
+        <strong>YP0</strong> = 5948.45 × INSEY^0.72<br>
         <strong>RI</strong> &nbsp;= ((NRS/FP) × 1.0077 + 0.19727) × 0.94<br>
         <strong>YPN</strong> = YP0 × RI<br>
         <strong>GNUP</strong> = Yield × 45 lbs/bu × %N<br>
