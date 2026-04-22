@@ -12,7 +12,7 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
 html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
-.stApp { background-color: #f7f8f6; }
+.stApp { background-color: #e8f0ec; }
 #MainMenu, footer, header { visibility: hidden; }
 
 .sc-header {
@@ -49,10 +49,11 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
 
 .sc-inputs-box {
     background: #ffffff;
-    border: 1px solid #dde4dc;
+    border: 1px solid #c8d8d0;
     border-radius: 4px;
-    padding: 1.4rem 1.5rem 1.2rem 1.5rem;
+    padding: 1.6rem 1.5rem 1.4rem 1.5rem;
     margin-bottom: 2rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
 }
 .sc-inputs-title {
     font-family: 'DM Mono', monospace;
@@ -64,6 +65,26 @@ html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
     padding-bottom: 10px;
     border-bottom: 1px solid #eef2ee;
     margin-bottom: 1rem;
+}
+/* Force number inputs to have visible labels and light background */
+.stNumberInput > label {
+    font-size: 0.72rem !important;
+    font-weight: 500 !important;
+    color: #2a4a40 !important;
+    letter-spacing: 0.02em !important;
+    margin-bottom: 4px !important;
+}
+.stNumberInput input {
+    background-color: #f4f8f6 !important;
+    border: 1px solid #c0d4cc !important;
+    color: #0e2420 !important;
+    font-family: 'DM Mono', monospace !important;
+    font-size: 1rem !important;
+    border-radius: 3px !important;
+}
+.stNumberInput input:focus {
+    border-color: #1a5c50 !important;
+    box-shadow: 0 0 0 2px rgba(26,92,80,0.12) !important;
 }
 
 .sc-section {
