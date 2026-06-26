@@ -362,21 +362,29 @@ def sugarcane_calc(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue):
     # Step 3: Response Index (RI)
     # Measures how much better the N-Rich strip looks vs the field
     # RI > 1.2 → strong N response; RI 1.0-1.2 → moderate; RI < 1.0 → low
-    ri = ((ndvi_nrs / ndvi_fp) * 1.2789 - 0.4257) if ndvi_fp > 0 else 0
+    # Verified exactly against the LSU AgCenter "Formulas" sheet (the live, linked calculation)
+    ri = ((ndvi_nrs / ndvi_fp) * 1.94 - 0.91) if ndvi_fp > 0 else 0
 
-    # Step 4: Yield potential WITH nitrogen applied
+    # Step 4: Yield potential WITH nitrogen applied (uncapped)
     # Multiply no-N yield by RI to estimate the yield gain from fertilization
-    # Also capped at max_yield
-    ypn = min(yp0 * ri, max_yield)
+    ypn_uncap = yp0 * ri
+
+    # Capped version of YPN, used for display only
+    ypn = min(ypn_uncap, max_yield)
 
     # Step 5: Stalk N uptake at YPN (with added N)
-    # Same formula as Step 2, applied to the higher with-N yield potential
-    gnup_ypn = ypn * 2000 * (pct_n / 100)
+    # IMPORTANT: this uses the UNCAPPED YPN, exactly as in the LSU AgCenter Excel (cell I17 = G18*2000*0.003)
+    gnup_ypn = ypn_uncap * 2000 * (pct_n / 100)
 
     # Step 6: Fertilizer N requirement
     # The N uptake gap (gnup_ypn - gnup_yp0) divided by efficiency
-    # np.clip() enforces agronomic bounds: min 40, max 180 lbs N/ac
-    fnr = float(np.clip((gnup_ypn - gnup_yp0) / nue, 40, 180))
+    raw_fnr = (gnup_ypn - gnup_yp0) / nue
+
+    # Excel's actual rule is NOT a simple clip — verified directly from the Formulas sheet:
+    #   J8 = IF(J18 > 120, 140, J18)   -- if raw FNR exceeds 120, force it to exactly 140
+    #   J9 = IF(J8 < 40, 40, J8)       -- floor at 40
+    fnr = 140.0 if raw_fnr > 120 else raw_fnr
+    fnr = 40.0 if fnr < 40 else fnr
 
     # Return all six values so every step can be displayed in the app
     return yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr
@@ -668,7 +676,7 @@ if crop == "sugarcane":
         <div class="ri-card">
             <div class="d-card-label">Response Index (RI) &nbsp;·&nbsp;
                 <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:#c0b0a0">
-                    (NDVI_NRS / NDVI_FP) × 1.2789 − 0.4257
+                    (NDVI_NRS / NDVI_FP) × 1.94 − 0.91
                 </span>
             </div>
             <div class="d-card-value" style="color:{rc}">{ri:.4f}</div>
@@ -707,10 +715,10 @@ if crop == "sugarcane":
         </div>
         <div class="formula-box">
             <strong>YP0</strong> &nbsp;= 12.07 × e^(NDVI_FP × 1.47)<br>
-            <strong>RI</strong> &nbsp;&nbsp;= (NRS / FP) × 1.2789 − 0.4257<br>
-            <strong>YPN</strong> &nbsp;= YP0 × RI &nbsp;[capped at max yield]<br>
+            <strong>RI</strong> &nbsp;&nbsp;= (NRS / FP) × 1.94 − 0.91<br>
+            <strong>YPN</strong> &nbsp;= YP0 × RI &nbsp;[uncapped for GNUPₙ]<br>
             <strong>GNUP</strong> = Yield × 2000 × %N<br>
-            <strong>FNR</strong> &nbsp;&nbsp;= (GNUPₙ − GNUP₀) / NUE
+            <strong>FNR</strong> &nbsp;&nbsp;= 140 if raw &gt; 120, else raw &nbsp;[floor 40]
         </div>""", unsafe_allow_html=True)
 
 
