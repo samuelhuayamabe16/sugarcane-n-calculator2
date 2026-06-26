@@ -362,7 +362,7 @@ def sugarcane_calc(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue):
     # Step 3: Response Index (RI)
     # Measures how much better the N-Rich strip looks vs the field
     # RI > 1.2 → strong N response; RI 1.0-1.2 → moderate; RI < 1.0 → low
-    ri = ((ndvi_nrs / ndvi_fp) * 1.94 - 0.91) if ndvi_fp > 0 else 0
+    ri = ((ndvi_nrs / ndvi_fp) * 1.2789 - 0.4257) if ndvi_fp > 0 else 0
 
     # Step 4: Yield potential WITH nitrogen applied
     # Multiply no-N yield by RI to estimate the yield gain from fertilization
@@ -668,7 +668,7 @@ if crop == "sugarcane":
         <div class="ri-card">
             <div class="d-card-label">Response Index (RI) &nbsp;·&nbsp;
                 <span style="font-family:'DM Mono',monospace;font-size:0.58rem;color:#c0b0a0">
-                    (NDVI_NRS / NDVI_FP) × 1.94 − 0.91
+                    (NDVI_NRS / NDVI_FP) × 1.2789 − 0.4257
                 </span>
             </div>
             <div class="d-card-value" style="color:{rc}">{ri:.4f}</div>
@@ -707,7 +707,7 @@ if crop == "sugarcane":
         </div>
         <div class="formula-box">
             <strong>YP0</strong> &nbsp;= 12.07 × e^(NDVI_FP × 1.47)<br>
-            <strong>RI</strong> &nbsp;&nbsp;= (NRS / FP) × 1.94 − 0.91<br>
+            <strong>RI</strong> &nbsp;&nbsp;= (NRS / FP) × 1.2789 − 0.4257<br>
             <strong>YPN</strong> &nbsp;= YP0 × RI &nbsp;[capped at max yield]<br>
             <strong>GNUP</strong> = Yield × 2000 × %N<br>
             <strong>FNR</strong> &nbsp;&nbsp;= (GNUPₙ − GNUP₀) / NUE
