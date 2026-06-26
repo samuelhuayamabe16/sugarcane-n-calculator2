@@ -709,7 +709,7 @@ if crop == "sugarcane":
             <strong>YP0</strong> &nbsp;= 12.07 × e^(NDVI_FP × 1.47)<br>
             <strong>RI</strong> &nbsp;&nbsp;= (NRS / FP) × 1.94 − 0.91<br>
             <strong>YPN</strong> &nbsp;= YP0 × RI &nbsp;[capped at max yield]<br>
-            <strong>GNUP</strong> = Yield × 2000 × dry matter × %N<br>
+            <strong>GNUP</strong> = Yield × 2000 × %N<br>
             <strong>FNR</strong> &nbsp;&nbsp;= (GNUPₙ − GNUP₀) / NUE
         </div>""", unsafe_allow_html=True)
 
