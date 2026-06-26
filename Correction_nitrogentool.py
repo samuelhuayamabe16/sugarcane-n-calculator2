@@ -406,28 +406,44 @@ def rice_calc(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue):
     """
 
     # Step 1: Yield potential WITHOUT nitrogen using a power function of raw NDVI
-    # Coefficient 239.8413 and exponent 0.72 calibrated from Louisiana/Mississippi field data
-    # Verified exactly against the LSU AgCenter/MSU Excel calculator (NDVI=0.94 -> YP0=229.390786)
-    # Result in bu/ac; capped at max_yield
-    yp0 = min(239.8413 * (ndvi_fp ** 0.72), max_yield)
+    # Verified exactly against the LSU AgCenter/MSU Excel "Formulas" sheet (cell D15):
+    #   YP0 = (12088 × NDVI_FP^0.72) ÷ 1.12 ÷ 45
+    # The /1.12/45 factors are part of the live formula, not arbitrary — they convert
+    # the original regression (in different units) into bu/ac.
+    # Result capped at max_yield
+    yp0_uncap = (12088 * (ndvi_fp ** 0.72)) / 1.12 / 45
+    yp0 = min(yp0_uncap, max_yield)
 
     # Step 2: Grain N uptake at YP0 (no added N)
-    # Rice yield in bu/ac × 45 lbs per bushel × grain %N
-    # Rice grain is harvested dry so no moisture correction is needed here
-    gnup_yp0 = yp0 * 45 * (pct_n / 100)
+    # Excel uses a fixed 1.2% grain N (0.012), not the pct_n parameter — kept here as pct_n
+    # so the UI input still works, but defaults to 1.2 to match the verified Excel exactly
+    gnup_yp0 = yp0 * (pct_n / 100) * 45
 
-    # Step 4: Response Index — rice-specific formula with different coefficients
-    ri = ((ndvi_nrs / ndvi_fp) * 1.0077 + 0.19727) * 0.94 if ndvi_fp > 0 else 0
+    # Step 3: Response Index — rice-specific formula, with a safety override for extreme ratios
+    # Verified exactly against Excel cell H5:
+    #   IF (NRS/FP) > 2.09938  →  RI = 2.298 × NDVI_FP   (caps RI for unrealistic NDVI gaps)
+    #   ELSE                    →  RI = ((NRS/FP) × 1.0077 + 0.19727) × 0.94
+    if ndvi_fp > 0:
+        ratio = ndvi_nrs / ndvi_fp
+        if ratio > 2.09938:
+            ri = 2.298 * ndvi_fp
+        else:
+            ri = (ratio * 1.0077 + 0.19727) * 0.94
+    else:
+        ri = 0
 
-    # Step 5: Yield potential WITH nitrogen, capped at max yield
-    ypn = min(yp0 * ri, max_yield)
+    # Step 4: Yield potential WITH nitrogen, capped at max yield
+    # IMPORTANT: unlike sugarcane, rice's GNUP_YPN uses the CAPPED YPN (verified Excel cell I15 = H15*...)
+    ypn_uncap = yp0 * ri
+    ypn = min(ypn_uncap, max_yield)
 
-    # Step 6: Grain N uptake at YPN (with added N)
-    gnup_ypn = ypn * 45 * (pct_n / 100)
+    # Step 5: Grain N uptake at YPN (with added N) — uses capped YPN
+    gnup_ypn = ypn * (pct_n / 100) * 45
 
-    # Step 7: Fertilizer N requirement
-    # Rice bounds: 0–150 lbs N/ac (lower ceiling than sugarcane's 40–180)
-    fnr = float(np.clip((gnup_ypn - gnup_yp0) / nue, 0, 150))
+    # Step 6: Fertilizer N requirement
+    # Verified Excel rule (cell H8): floor at 0 only — no upper cap in the live formula
+    raw_fnr = (gnup_ypn - gnup_yp0) / nue
+    fnr = 0.0 if raw_fnr < 0 else float(raw_fnr)
 
     return yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr
 
@@ -906,16 +922,17 @@ else:
             <div class="rec-value-rc">{fnr:.0f}</div>
             <div class="rec-unit-rc">lbs N / acre</div>
             <div class="rec-note-rc">
-                Bounded 0–150 lb N/ac per LSU AgCenter rice guidelines.<br>
+                Floored at 0 lb N/ac per LSU AgCenter rice guidelines.<br>
                 Adjust NUE for fertilizer source and flood conditions.
             </div>
         </div>
         <div class="formula-box">
-            <strong>YP0</strong> &nbsp;= 239.8413 × NDVI_FP^0.72<br>
+            <strong>YP0</strong> &nbsp;= (12088 × NDVI_FP^0.72) ÷ 1.12 ÷ 45<br>
             <strong>RI</strong> &nbsp;&nbsp;= ((NRS/FP) × 1.0077 + 0.19727) × 0.94<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;[RI = 2.298 × FP if NRS/FP &gt; 2.099]<br>
             <strong>YPN</strong> &nbsp;= YP0 × RI &nbsp;[capped at max yield]<br>
             <strong>GNUP</strong> = Yield × 45 lbs/bu × %N<br>
-            <strong>FNR</strong> &nbsp;&nbsp;= (GNUPₙ − GNUP₀) / NUE
+            <strong>FNR</strong> &nbsp;&nbsp;= (GNUPₙ − GNUP₀) / NUE &nbsp;[floor 0]
         </div>""", unsafe_allow_html=True)
 
 
