@@ -599,16 +599,13 @@ if crop == "sugarcane":
 
     # Special cultivar question — HoCP14-885 sometimes needs a higher midseason N rate
     # than the standard algorithm's 140 lb/ac ceiling allows
-    # Two columns: narrow one for the text input, wide one for the explanatory caption
-    cb_col, cb_text_col = st.columns([1, 6])
-    with cb_col:
-        sc_cultivar_input = st.text_input("HoCP14-885?", value="No")
-    with cb_text_col:
-        st.caption(
-            "This cultivar sometimes requires higher N recommendations. "
-            "Type \"Yes\" to raise the fertilizer N ceiling from 140 to 200 lbs N/ac, "
-            "or \"No\" to keep the standard ceiling."
-        )
+    st.markdown('<div class="sec-label">Cultivar Adjustment</div>', unsafe_allow_html=True)
+    sc_cultivar_input = st.text_input("HoCP14-885?", value="No")
+    st.caption(
+        "This cultivar sometimes requires higher N recommendations. "
+        "Type \"Yes\" to raise the fertilizer N ceiling from 140 to 200 lbs N/ac, "
+        "or \"No\" to keep the standard ceiling."
+    )
 
     # Convert the typed answer into a boolean — accepts Yes/No in any capitalization
     sc_high_n = sc_cultivar_input.strip().lower() == "yes"
