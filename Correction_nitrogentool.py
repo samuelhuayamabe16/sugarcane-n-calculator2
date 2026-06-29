@@ -601,9 +601,12 @@ if crop == "sugarcane":
     # than the standard algorithm's 140 lb/ac ceiling allows
     st.markdown('<div class="sec-label">Cultivar Adjustment</div>', unsafe_allow_html=True)
     st.markdown(
-        "This cultivar sometimes requires higher N recommendations. "
-        "Type **Yes** to raise the fertilizer N ceiling from 140 to 200 lbs N/ac, "
-        "or **No** to keep the standard ceiling."
+        '<p style="color:#1a1410; font-size:0.95rem; line-height:1.5;">'
+        'This cultivar sometimes requires higher N recommendations. '
+        'Type <strong>Yes</strong> to raise the fertilizer N ceiling from 140 to 200 lbs N/ac, '
+        'or <strong>No</strong> to keep the standard ceiling.'
+        '</p>',
+        unsafe_allow_html=True
     )
     sc_cultivar_input = st.text_input("HoCP14-885?", value="No")
 
