@@ -333,17 +333,20 @@ div[data-testid="stHorizontalBlock"] button {
 # Pure math — completely separate from the display code.
 # Inputs go in, all intermediate values come out.
 
-def sugarcane_calc(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue):
+def sugarcane_calc(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue, high_n_cultivar=False):
     """
     LSU AgCenter Sugarcane N Rate Algorithm
     Tubana, Johnson & Viator
 
     Parameters:
-      ndvi_fp    — NDVI of the farmer's practice field (no extra N applied)
-      ndvi_nrs   — NDVI of the N-Rich reference strip (well fertilized)
-      max_yield  — yield ceiling in ton/ac (typically 2x the 5-year average)
-      pct_n      — nitrogen content of sugarcane stalk as a percentage (default 0.30%)
-      nue        — N use efficiency: fraction of applied N actually absorbed by the crop
+      ndvi_fp         — NDVI of the farmer's practice field (no extra N applied)
+      ndvi_nrs        — NDVI of the N-Rich reference strip (well fertilized)
+      max_yield       — yield ceiling in ton/ac (typically 2x the 5-year average)
+      pct_n           — nitrogen content of sugarcane stalk as a percentage (default 0.30%)
+      nue             — N use efficiency: fraction of applied N actually absorbed by the crop
+      high_n_cultivar — if True, raises the FNR ceiling from 140 to 200 lbs N/ac.
+                        Added for the HoCP14-885 cultivar, which sometimes requires
+                        a higher midseason N rate than the standard algorithm allows.
 
     Returns: yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr
     """
@@ -383,7 +386,11 @@ def sugarcane_calc(ndvi_fp, ndvi_nrs, max_yield, pct_n, nue):
     # Excel's actual rule is NOT a simple clip — verified directly from the Formulas sheet:
     #   J8 = IF(J18 > 120, 140, J18)   -- if raw FNR exceeds 120, force it to exactly 140
     #   J9 = IF(J8 < 40, 40, J8)       -- floor at 40
-    fnr = 140.0 if raw_fnr > 120 else raw_fnr
+    # For the HoCP14-885 cultivar, the same >120 trigger applies but the ceiling
+    # is raised to 200 lbs N/ac instead of 140, since this cultivar sometimes
+    # needs a higher midseason N rate than the standard algorithm allows.
+    ceiling = 200.0 if high_n_cultivar else 140.0
+    fnr = ceiling if raw_fnr > 120 else raw_fnr
     fnr = 40.0 if fnr < 40 else fnr
 
     # Return all six values so every step can be displayed in the app
@@ -590,14 +597,24 @@ if crop == "sugarcane":
     # Close the input panel HTML div
     st.markdown('</div>', unsafe_allow_html=True)
 
+    # Special cultivar checkbox — HoCP14-885 sometimes needs a higher midseason N rate
+    # than the standard algorithm's 140 lb/ac ceiling allows
+    sc_high_n = st.checkbox(
+        "HoCP14-885?",
+        value=False,
+        help="This cultivar sometimes requires higher N recommendations. "
+             "When checked, the fertilizer N ceiling is raised from 140 to 200 lbs N/ac."
+    )
+
     # ── RUN THE ALGORITHM ─────────────────────────────────────────────────────
-    # Pass all 5 inputs to the function; unpack the 6 returned values
+    # Pass all inputs to the function; unpack the 6 returned values
     yp0, gnup_yp0, ri, ypn, gnup_ypn, fnr = sugarcane_calc(
         sc_fp,      # NDVI farmer's practice
         sc_nrs,     # NDVI N-Rich strip
         sc_yield,   # maximum yield ceiling
         sc_pct,     # stalk N content %
-        sc_nue      # N use efficiency
+        sc_nue,     # N use efficiency
+        sc_high_n   # HoCP14-885 high-N cultivar override
     )
 
     # ── NDVI OVERVIEW ─────────────────────────────────────────────────────────
@@ -717,6 +734,13 @@ if crop == "sugarcane":
         st.markdown(f'<div class="interp {ic}">{im}</div>', unsafe_allow_html=True)
 
     with right:
+        # Dynamic ceiling note and formula text depending on the cultivar checkbox
+        ceiling_display = 200 if sc_high_n else 140
+        cultivar_note = (
+            ' · HoCP14-885 ceiling active'
+            if sc_high_n else ''
+        )
+
         # Dark recommendation box with the final N rate in large gold digits
         # {fnr:.0f} formats fnr as a whole number (no decimal places)
         st.markdown(f"""
@@ -725,7 +749,7 @@ if crop == "sugarcane":
             <div class="rec-value-sc">{fnr:.0f}</div>
             <div class="rec-unit-sc">lbs N / acre</div>
             <div class="rec-note-sc">
-                Bounded 40–180 lb N/ac per LSU AgCenter sugarcane guidelines.<br>
+                Bounded 40–{ceiling_display} lb N/ac per LSU AgCenter sugarcane guidelines{cultivar_note}.<br>
                 Adjust NUE to reflect fertilizer source, timing, and soil conditions.
             </div>
         </div>
@@ -734,7 +758,7 @@ if crop == "sugarcane":
             <strong>RI</strong> &nbsp;&nbsp;= (NRS / FP) × 1.94 − 0.91<br>
             <strong>YPN</strong> &nbsp;= YP0 × RI &nbsp;[uncapped for GNUPₙ]<br>
             <strong>GNUP</strong> = Yield × 2000 × %N<br>
-            <strong>FNR</strong> &nbsp;&nbsp;= 140 if raw &gt; 120, else raw &nbsp;[floor 40]
+            <strong>FNR</strong> &nbsp;&nbsp;= {ceiling_display} if raw &gt; 120, else raw &nbsp;[floor 40]
         </div>""", unsafe_allow_html=True)
 
 
