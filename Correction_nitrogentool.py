@@ -57,6 +57,33 @@ html, body, [class*="css"] {
     text-transform: uppercase !important;  /* ALL CAPS label style */
 }
 
+/* ── TEXT INPUT LABEL ──
+   The label above text input boxes (e.g. "HoCP14-885?") — same dark styling as number inputs */
+.stTextInput > label {
+    font-size: 0.7rem !important;
+    font-weight: 500 !important;
+    color: #3a3228 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+}
+
+/* ── TEXT INPUT BOX ──
+   The white box where the user types Yes/No */
+.stTextInput input {
+    background-color: #ffffff !important;
+    border: 1.5px solid #d8d0c4 !important;
+    color: #1a1410 !important;
+    font-family: 'DM Mono', monospace !important;
+    font-size: 1.05rem !important;
+    border-radius: 4px !important;
+    padding: 8px 12px !important;
+}
+.stTextInput input:focus {
+    border-color: #8a6a2a !important;
+    box-shadow: 0 0 0 3px rgba(138,106,42,0.1) !important;
+    outline: none !important;
+}
+
 /* ── NUMBER INPUT BOX ──
    The white box where the user types a value. */
 .stNumberInput input {
