@@ -599,12 +599,15 @@ if crop == "sugarcane":
 
     # Special cultivar checkbox — HoCP14-885 sometimes needs a higher midseason N rate
     # than the standard algorithm's 140 lb/ac ceiling allows
-    sc_high_n = st.checkbox(
-        "HoCP14-885?",
-        value=False,
-        help="This cultivar sometimes requires higher N recommendations. "
-             "When checked, the fertilizer N ceiling is raised from 140 to 200 lbs N/ac."
-    )
+    # Two columns: narrow one for the checkbox, wide one for the explanatory caption
+    cb_col, cb_text_col = st.columns([1, 6])
+    with cb_col:
+        sc_high_n = st.checkbox("HoCP14-885?", value=False)
+    with cb_text_col:
+        st.caption(
+            "This cultivar sometimes requires higher N recommendations. "
+            "When checked, the fertilizer N ceiling is raised from 140 to 200 lbs N/ac."
+        )
 
     # ── RUN THE ALGORITHM ─────────────────────────────────────────────────────
     # Pass all inputs to the function; unpack the 6 returned values
